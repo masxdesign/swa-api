@@ -23,7 +23,11 @@ const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: 
 env.addFilter("markdown", (str) => marked.parse(str || ""));
 
 // API configuration
-const isLocalDev = !process.env.WEBSITE_HOSTNAME; // Azure SWA sets this in production
+// const isLocalDev = !process.env.WEBSITE_HOSTNAME; // Azure SWA sets this in production
+
+// just for testing!
+const isLocalDev = true; // Azure SWA sets this in production
+
 const API_BASE_URL = process.env.BLOG_API_BASE_URL || (isLocalDev ? "https://localhost:8083" : "https://property.pub");
 
 // Allow self-signed certs in local development only
