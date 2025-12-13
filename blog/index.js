@@ -23,25 +23,21 @@ const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: 
 env.addFilter("markdown", (str) => marked.parse(str || ""));
 
 // API configuration
-// const isLocalDev = !process.env.WEBSITE_HOSTNAME; // Azure SWA sets this in production
-
-// just for testing!
-const isLocalDev = true; // Azure SWA sets this in production
-
-const API_BASE_URL = process.env.BLOG_API_BASE_URL || (isLocalDev ? "https://localhost:8083" : "https://property.pub");
+const isLocalDev = !process.env.WEBSITE_HOSTNAME; // Azure SWA sets this in production
+const PROPERTY_PUB_API_BASE_URL = process.env.PROPERTY_PUB_API_BASE_URL || (isLocalDev ? "https://localhost:8083" : "https://property.pub");
 
 // Allow self-signed certs in local development only
 const agent = isLocalDev ? new https.Agent({ rejectUnauthorized: false }) : undefined;
 
 async function fetchPosts(advertiserId) {
-  const response = await fetch(`${API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts`, { agent });
+  const response = await fetch(`${PROPERTY_PUB_API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts`, { agent });
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const result = await response.json();
   return result.data || [];
 }
 
 async function fetchPost(advertiserId, postId) {
-  const response = await fetch(`${API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts/${postId}`, { agent });
+  const response = await fetch(`${PROPERTY_PUB_API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts/${postId}`, { agent });
   if (!response.ok) return null;
   const result = await response.json();
   return result.data || null;
