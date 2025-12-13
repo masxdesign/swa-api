@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Blog - {{ site.name }}{% endblock %}</title>
+  <link id="main-styles" rel="stylesheet" href="{{ cssPath | default('/assets/index.css') }}">
+</head>
+<body class="bg-white">
+  <header class="bg-white shadow-lg/5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <a href="/" class="flex items-center justify-start gap-2">
+            <img src="/logo-primary.svg" alt="{{ site.name }}" class="h-8">
+            <span class="flex flex-col leading-none -space-y-2.5 font-logo text-gray-900">
+                <span class="text-lg font-bold tracking-tight">{{ site.brandLine1 }}</span>
+                <span class="text-lg font-bold tracking-tight">{{ site.brandLine2 }}</span>
+            </span>
+        </a>
+        <nav>
+          <a href="/" class="text-primary hover:underline">Home</a>
+          <a href="/blog" class="text-primary hover:underline ml-4">Blog</a>
+        </nav>
+      </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 pt-16 pb-8 min-h-[80vh] text-gray-900">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col items-center gap-4">
+              <div class="flex items-center gap-2">
+                  <img src="/logo-primary.svg" alt="{{ site.name }}" class="h-7 brightness-0 invert">
+                  <div class="flex flex-col leading-none -space-y-0.5 font-logo">
+                      <span class="text-base font-bold text-white tracking-tight">{{ site.brandLine1 }}</span>
+                      <span class="text-base font-bold text-white tracking-tight">{{ site.brandLine2 }}</span>
+                  </div>
+              </div>
+              <p class="text-sm text-center">
+                  &copy; 2025 {{ site.name }}. {{ site.tagline }}
+              </p>
+          </div>
+      </div>
+  </footer>
+</body>
+</html>

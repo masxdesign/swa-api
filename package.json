@@ -1,0 +1,10 @@
+{
+  "name": "swa-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "marked": "^15.0.4",
+    "node-fetch": "^2.6.1",
+    "nunjucks": "^3.2.4"
+  }
+}
+  

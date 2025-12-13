@@ -1,0 +1,15 @@
+{% extends "layout.njk" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<article>
+  <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ post.title }}</h1>
+  <p class="text-sm text-gray-500 mb-8">Published {{ post.published_at }}</p>
+  <div class="prose prose-lg max-w-none text-gray-900">
+    {{ post.content | markdown | safe }}
+  </div>
+</article>
+<hr class="border-gray-200 my-8">
+<p><a href="/blog" class="text-primary hover:underline">← Back to blog</a></p>
+{% endblock %}

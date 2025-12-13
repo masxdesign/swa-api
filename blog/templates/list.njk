@@ -1,0 +1,17 @@
+{% extends "layout.njk" %}
+
+{% block title %}Blog - {{ site.name }}{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-900 mb-8">Blog</h1>
+<div class="posts-list space-y-6">
+  {% for post in posts %}
+  <article class="post-preview">
+    <h2 class="text-xl font-semibold"><a href="/blog/post/{{ post.id }}" class="text-primary hover:underline">{{ post.title }}</a></h2>
+    <p class="text-sm text-gray-500">{{ post.published_at }}</p>
+  </article>
+  {% else %}
+  <p class="text-gray-600">No posts found.</p>
+  {% endfor %}
+</div>
+{% endblock %}
