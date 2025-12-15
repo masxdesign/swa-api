@@ -109,7 +109,7 @@ module.exports = async function (context, req) {
     context.res = {
       status: 500,
       headers: { "Content-Type": "text/html" },
-      body: "<h1>Error</h1><p>Something went wrong loading this post.</p>"
+      body: `<h1>Error</h1><p>Something went wrong loading this post. ${err.message}</p>`
     };
   }
 };
