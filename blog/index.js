@@ -29,15 +29,22 @@ const PROPERTY_PUB_API_BASE_URL = process.env.PROPERTY_PUB_API_BASE_URL || (isLo
 // Allow self-signed certs in local development only
 const agent = isLocalDev ? new https.Agent({ rejectUnauthorized: false }) : undefined;
 
+// Property.pub fetch wrapper - adds cache-busting ts param for Azure Front Door
+async function propertyPubFetch(endpoint, options = {}) {
+  const url = new URL(`${PROPERTY_PUB_API_BASE_URL}${endpoint}`);
+  url.searchParams.set("ts", Date.now());
+  return fetch(url.toString(), { agent, ...options });
+}
+
 async function fetchPosts(advertiserId) {
-  const response = await fetch(`${PROPERTY_PUB_API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts`, { agent });
+  const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const result = await response.json();
   return result.data || [];
 }
 
 async function fetchPost(advertiserId, postId) {
-  const response = await fetch(`${PROPERTY_PUB_API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts/${postId}`, { agent });
+  const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts/${postId}`);
   if (!response.ok) return null;
   const result = await response.json();
   return result.data || null;
