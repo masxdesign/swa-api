@@ -2,9 +2,7 @@ const nunjucks = require("nunjucks");
 const path = require("path");
 const fs = require("fs");
 const { marked } = require("marked");
-const fetch = require("node-fetch");
-const https = require("https");
-const { getConfig } = require("./utils");
+const { getConfig, propertyPubFetch } = require("../utils");
 
 // Load asset manifest for CSS path
 let cssPath = "/assets/index.css"; // fallback
@@ -21,20 +19,6 @@ try {
 const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: true });
 
 env.addFilter("markdown", (str) => marked.parse(str || ""));
-
-// API configuration
-const isLocalDev = !process.env.WEBSITE_HOSTNAME; // Azure SWA sets this in production
-const PROPERTY_PUB_API_BASE_URL = process.env.PROPERTY_PUB_API_BASE_URL || (isLocalDev ? "https://localhost:8083" : "https://property.pub");
-
-// Allow self-signed certs in local development only
-const agent = isLocalDev ? new https.Agent({ rejectUnauthorized: false }) : undefined;
-
-// Property.pub fetch wrapper - adds cache-busting ts param for Azure Front Door
-async function propertyPubFetch(endpoint, options = {}) {
-  const url = new URL(`${PROPERTY_PUB_API_BASE_URL}${endpoint}`);
-  url.searchParams.set("ts", Date.now());
-  return fetch(url.toString(), { agent, ...options });
-}
 
 async function fetchPosts(advertiserId) {
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts`);

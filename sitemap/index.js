@@ -1,20 +1,9 @@
-const fetch = require("node-fetch");
-const https = require("https");
-const path = require("path");
+const { getConfig, propertyPubFetch } = require("../utils");
 
-// Load site configuration
-const configPath = path.resolve(__dirname, "../site.config.json");
-const config = require(configPath);
-
-// API configuration
-const isLocalDev = !process.env.WEBSITE_HOSTNAME;
-const PROPERTY_PUB_API_BASE_URL = process.env.PROPERTY_PUB_API_BASE_URL || (isLocalDev ? "https://localhost:8083" : "https://property.pub");
-
-// Allow self-signed certs in local development only
-const agent = isLocalDev ? new https.Agent({ rejectUnauthorized: false }) : undefined;
+const config = getConfig();
 
 async function fetchPosts(advertiserId) {
-  const response = await fetch(`${PROPERTY_PUB_API_BASE_URL}/api/advertisers/${advertiserId}/blog-posts`, { agent });
+  const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const result = await response.json();
   return result.data || [];
@@ -73,14 +62,10 @@ function generateSitemap(baseUrl, posts) {
   return xml;
 }
 
-module.exports = async function (context, req) {
+module.exports = async function (context) {
   try {
-    const { advertiserId } = config;
-
-    // Auto-detect base URL from request host header
-    const host = req.headers["x-forwarded-host"] || req.headers.host || "localhost";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const baseUrl = `${protocol}://${host}`;
+    const { advertiserId, site } = config;
+    const baseUrl = site.url;
 
     // Fetch all blog posts
     const posts = await fetchPosts(advertiserId);
