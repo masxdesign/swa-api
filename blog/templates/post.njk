@@ -96,8 +96,32 @@
   {% endif %}
 </div>
 
-<hr class="border-slate-200 my-10">
-<p><a href="/blog" class="text-sm text-primary hover:underline">&larr; Back to blog</a></p>
+{# ── Prev / Next navigation ── #}
+{% if post.prev_post or post.next_post %}
+<nav class="mt-10 border-t border-slate-200 pt-8 grid grid-cols-1 sm:grid-cols-2 gap-4" aria-label="Post navigation">
+  {% if post.prev_post %}
+  <a href="/blog/{{ post.prev_post.title | slugify }}-{{ post.prev_post.id }}"
+     class="group flex flex-col p-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all">
+    <span class="text-xs font-medium text-slate-400 mb-1">&larr; Previous</span>
+    <span class="text-sm font-semibold text-slate-700 group-hover:text-primary transition-colors line-clamp-2">{{ post.prev_post.title }}</span>
+  </a>
+  {% else %}
+  <div></div>
+  {% endif %}
+
+  {% if post.next_post %}
+  <a href="/blog/{{ post.next_post.title | slugify }}-{{ post.next_post.id }}"
+     class="group flex flex-col p-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all sm:text-right">
+    <span class="text-xs font-medium text-slate-400 mb-1">Next &rarr;</span>
+    <span class="text-sm font-semibold text-slate-700 group-hover:text-primary transition-colors line-clamp-2">{{ post.next_post.title }}</span>
+  </a>
+  {% endif %}
+</nav>
+{% endif %}
+
+<div class="mt-8">
+  <a href="/blog" class="text-sm text-primary hover:underline">&larr; Back to blog</a>
+</div>
 
 {% if headingCount >= 2 %}
 <script>
