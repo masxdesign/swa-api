@@ -44,20 +44,6 @@ env.addFilter("postCategory", (title) => {
   return "Insight";
 });
 
-// Generate an excerpt by stripping markdown from post.content
-env.addFilter("postExcerpt", (post) => {
-  const content = post.content || "";
-  const plain = content
-    .replace(/^#{1,6}\s+.*$/gm, "")       // Remove headings
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")  // Remove images
-    .replace(/\[[^\]]*\]\([^)]*\)/g, (m) => m.replace(/\[([^\]]*)\]\([^)]*\)/, "$1")) // Links → text
-    .replace(/[*_~`>]/g, "")               // Remove emphasis/quote/code markers
-    .replace(/\n+/g, " ")                  // Collapse newlines
-    .replace(/\s+/g, " ")                  // Collapse whitespace
-    .trim();
-  if (!plain) return "";
-  return plain.length > 160 ? plain.slice(0, 157) + "..." : plain;
-});
 
 async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
