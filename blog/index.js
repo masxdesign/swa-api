@@ -34,15 +34,6 @@ function slugify(text) {
 
 env.addFilter("slugify", slugify);
 
-// Derive a category pill label from the post title
-env.addFilter("postCategory", (title) => {
-  const t = (title || "").toLowerCase();
-  if (t.includes("market overview")) return "Market Overview";
-  if (t.includes("guide")) return "Guide";
-  if (t.includes("analysis")) return "Analysis";
-  if (t.includes("trend")) return "Trends";
-  return "Insight";
-});
 
 
 // Parse rendered HTML to extract headings, inject IDs, and build a TOC structure
