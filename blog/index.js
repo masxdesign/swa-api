@@ -75,6 +75,39 @@ function processContentWithTOC(markdownContent) {
   return { html: processed, toc: nested, headingCount: toc.length };
 }
 
+// Build an inline CTA block and inject it mid-article after the Nth </p>
+function injectPropertyCTA(html, postcodes, advertiserId, { afterParagraph = 3 } = {}) {
+  if (!postcodes || !postcodes.length) return html;
+
+  const links = postcodes
+    .map(
+      (pc) =>
+        `<a href="https://property.pub/${encodeURIComponent(advertiserId)}/search?postcode=${encodeURIComponent(pc)}" target="_blank" rel="noopener" class="flex items-center justify-between gap-2 text-sm font-semibold text-white bg-primary rounded-lg px-4 py-2.5 hover:bg-primary/85 transition-colors"><span>Properties in ${pc}</span><span>&rarr;</span></a>`
+    )
+    .join("\n            ");
+
+  const cta = `
+      <aside class="not-prose my-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:p-6">
+        <p class="text-base font-semibold text-slate-800 mb-1">Interested in properties nearby?</p>
+        <p class="text-sm text-slate-500 mb-4">Browse available listings in the areas covered by this article.</p>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-2">
+            ${links}
+        </div>
+      </aside>`;
+
+  // Find the Nth closing </p> and insert after it
+  let count = 0;
+  const injected = html.replace(/<\/p>/gi, (match) => {
+    count++;
+    if (count === afterParagraph) return match + cta;
+    return match;
+  });
+
+  // If content was too short to hit the threshold, append at the end
+  if (count < afterParagraph) return html + cta;
+  return injected;
+}
+
 async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
 
@@ -165,7 +198,8 @@ module.exports = async function (context, req) {
         return;
       }
 
-      const { html: contentHtml, toc, headingCount } = processContentWithTOC(post.content);
+      const { html: rawContentHtml, toc, headingCount } = processContentWithTOC(post.content);
+      const contentHtml = injectPropertyCTA(rawContentHtml, post.extractedPostcodes, advertiserId);
       const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath, advertiserId });
 
       context.res = {
