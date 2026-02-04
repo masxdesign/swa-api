@@ -166,7 +166,7 @@ module.exports = async function (context, req) {
       }
 
       const { html: contentHtml, toc, headingCount } = processContentWithTOC(post.content);
-      const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath });
+      const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath, advertiserId });
 
       context.res = {
         status: 200,
