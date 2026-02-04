@@ -34,6 +34,30 @@ function slugify(text) {
 
 env.addFilter("slugify", slugify);
 
+// Derive a category pill label from the post title
+env.addFilter("postCategory", (title) => {
+  const t = (title || "").toLowerCase();
+  if (t.includes("market overview")) return "Market Overview";
+  if (t.includes("guide")) return "Guide";
+  if (t.includes("analysis")) return "Analysis";
+  if (t.includes("trend")) return "Trends";
+  return "Insight";
+});
+
+// Generate a fallback excerpt from the title
+env.addFilter("postExcerpt", (post) => {
+  if (post.excerpt) return post.excerpt;
+  // Try to extract location info from the title
+  // Typical title: "Commercial Retail Real Estate Guide - Bond Street, East Marylebone, W5, London"
+  const title = post.title || "";
+  const parts = title.split(/\s*[-–—]\s*/);
+  if (parts.length > 1) {
+    const location = parts.slice(1).join(", ").trim();
+    return `A commercial snapshot of retail demand, tenant mix and trading dynamics in ${location}.`;
+  }
+  return `Explore commercial property insights and retail market analysis in this latest article from ShopProperty.`;
+});
+
 async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
 

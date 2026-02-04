@@ -2,34 +2,68 @@
 
 {% block title %}Blog - {{ site.name }}{% endblock %}
 
-{% block content %}
-<h1 class="text-3xl font-bold text-gray-900 mb-8">Blog</h1>
-<div class="posts-list space-y-6">
-  {% for post in posts %}
-  <article class="post-preview">
-    <h2 class="text-xl font-semibold"><a href="/blog/{{ post.title | slugify }}-{{ post.id }}" class="text-primary hover:underline">{{ post.title }}</a></h2>
-    <p class="text-sm text-gray-500">{{ post.published_at }}</p>
-  </article>
-  {% else %}
-  <p class="text-gray-600">No posts found.</p>
-  {% endfor %}
-</div>
+{% block main_class %}max-w-6xl{% endblock %}
 
+{% block content %}
+{# ── Hero / Page Header ── #}
+<section class="text-center pb-12 border-b border-slate-200">
+  <span class="inline-block text-xs font-semibold tracking-widest uppercase text-primary mb-3">Commercial Retail Insights</span>
+  <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4">Blog</h1>
+  <p class="max-w-2xl mx-auto text-lg text-slate-500 leading-relaxed">Whether you're buying, selling or leasing, explore up-to-date commercial property insights and retail market analysis from across the UK.</p>
+</section>
+
+{# ── Post Grid ── #}
+<section class="pt-12">
+  {% if posts.length %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for post in posts %}
+    <a href="/blog/{{ post.title | slugify }}-{{ post.id }}"
+       class="group flex flex-col bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+
+      <div class="flex flex-col flex-1 p-5">
+        {# Category pill #}
+        <span class="self-start text-[11px] font-semibold uppercase tracking-wide text-primary bg-primary/10 rounded-full px-2.5 py-0.5 mb-3">{{ post.title | postCategory }}</span>
+
+        {# Title #}
+        <h2 class="text-lg font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-primary transition-colors mb-2">{{ post.title }}</h2>
+
+        {# Date #}
+        <time class="text-xs text-slate-400 mb-3">{{ post.published_at }}</time>
+
+        {# Excerpt #}
+        <p class="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4">{{ post | postExcerpt }}</p>
+
+        {# CTA #}
+        <span class="mt-auto text-sm font-medium text-slate-400 group-hover:text-primary transition-colors">Read article &rarr;</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-center text-slate-500 py-16">No posts found.</p>
+  {% endif %}
+</section>
+
+{# ── Pagination ── #}
 {% if pagination and pagination.total_pages > 1 %}
-<div class="mt-8 flex items-center gap-4">
+<nav class="mt-12 flex items-center justify-center gap-3" aria-label="Pagination">
   {% if pagination.has_prev_page %}
-  <a href="/blog?page={{ pagination.page - 1 }}" class="inline-block px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">
+  <a href="/blog?page={{ pagination.page - 1 }}"
+     class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
     Previous
   </a>
   {% endif %}
 
-  <span class="text-gray-600">Page {{ pagination.page }} of {{ pagination.total_pages }}</span>
+  <span class="text-sm text-slate-500 px-2">Page {{ pagination.page }} of {{ pagination.total_pages }}</span>
 
   {% if pagination.has_next_page %}
-  <a href="/blog?page={{ pagination.page + 1 }}" class="inline-block px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">
+  <a href="/blog?page={{ pagination.page + 1 }}"
+     class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors">
     Next
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
   </a>
   {% endif %}
-</div>
+</nav>
 {% endif %}
 {% endblock %}

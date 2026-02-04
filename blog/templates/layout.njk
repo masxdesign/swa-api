@@ -23,7 +23,7 @@
       </div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-4 pt-16 pb-8 min-h-[80vh] text-gray-900">
+  <main class="{% block main_class %}max-w-3xl{% endblock %} mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 min-h-[80vh] text-gray-900">
     {% block content %}{% endblock %}
   </main>
 
