@@ -14,4 +14,12 @@
   <p class="text-gray-600">No posts found.</p>
   {% endfor %}
 </div>
+
+{% if pagination and pagination.has_next_page %}
+<div class="mt-8">
+  <a href="/blog?cursor={{ pagination.next_cursor }}" class="inline-block px-6 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">
+    Next Page
+  </a>
+</div>
+{% endif %}
 {% endblock %}
