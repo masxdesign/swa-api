@@ -2,14 +2,138 @@
 
 {% block title %}{{ post.title }}{% endblock %}
 
+{% block main_class %}max-w-6xl{% endblock %}
+
 {% block content %}
-<article>
-  <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ post.title }}</h1>
-  <p class="text-sm text-gray-500 mb-8">Published {{ post.published_at }}</p>
-  <div class="prose prose-lg max-w-none text-gray-900">
-    {{ post.content | markdown | safe }}
-  </div>
-</article>
-<hr class="border-gray-200 my-8">
-<p><a href="/blog" class="text-primary hover:underline">← Back to blog</a></p>
+{# ── Post Header ── #}
+<header class="mb-10">
+  <p class="mb-4"><a href="/blog" class="text-sm text-primary hover:underline">&larr; Back to blog</a></p>
+  <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">{{ post.title }}</h1>
+  <p class="text-sm text-slate-400">Published {{ post.published_at }}</p>
+</header>
+
+{# ── Two-column grid ── #}
+<div class="lg:grid lg:grid-cols-12 lg:gap-10">
+
+  {# ── Article content (left) ── #}
+  <article id="article-content" class="lg:col-span-8 min-w-0">
+    <div class="prose prose-lg max-w-none text-gray-900">
+      {{ contentHtml | safe }}
+    </div>
+  </article>
+
+  {# ── TOC sidebar (right) — only if 2+ headings ── #}
+  {% if headingCount >= 2 %}
+  <aside class="lg:col-span-4 mt-10 lg:mt-0">
+
+    {# Mobile: collapsible accordion #}
+    <details class="lg:hidden rounded-2xl border border-slate-200 bg-white shadow-sm mb-8">
+      <summary class="cursor-pointer select-none p-4 text-sm font-semibold text-slate-700">Contents</summary>
+      <nav class="px-4 pb-4">
+        <ul class="space-y-1.5">
+          {% for item in toc %}
+          <li>
+            <a href="#{{ item.id }}" class="block text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline">{{ item.text }}</a>
+            {% if item.children.length %}
+            <ul class="mt-1 space-y-1">
+              {% for child in item.children %}
+              <li><a href="#{{ child.id }}" class="block text-xs text-slate-500 ml-3 hover:text-slate-900 hover:underline">{{ child.text }}</a></li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </details>
+
+    {# Desktop: sticky sidebar #}
+    <div class="hidden lg:block sticky top-24">
+      <nav class="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+        <p class="text-sm font-semibold text-slate-700 mb-3">Contents</p>
+        <ul id="toc-list" class="space-y-1">
+          {% for item in toc %}
+          <li>
+            <a href="#{{ item.id }}" data-toc-id="{{ item.id }}"
+               class="toc-link block text-sm font-medium text-slate-600 py-1 border-l-2 border-transparent pl-3 hover:text-slate-900 hover:underline transition-colors">{{ item.text }}</a>
+            {% if item.children.length %}
+            <ul class="space-y-0.5">
+              {% for child in item.children %}
+              <li>
+                <a href="#{{ child.id }}" data-toc-id="{{ child.id }}"
+                   class="toc-link block text-xs text-slate-400 py-0.5 border-l-2 border-transparent pl-6 hover:text-slate-900 hover:underline transition-colors">{{ child.text }}</a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  {% endif %}
+</div>
+
+<hr class="border-slate-200 my-10">
+<p><a href="/blog" class="text-sm text-primary hover:underline">&larr; Back to blog</a></p>
+
+{% if headingCount >= 2 %}
+<script>
+(function() {
+  // Smooth scroll for TOC links
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var target = document.getElementById(this.getAttribute('href').slice(1));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', this.getAttribute('href'));
+      }
+    });
+  });
+
+  // IntersectionObserver for active heading highlight
+  var tocLinks = document.querySelectorAll('#toc-list .toc-link');
+  if (!tocLinks.length) return;
+
+  var headingIds = [];
+  tocLinks.forEach(function(l) { headingIds.push(l.getAttribute('data-toc-id')); });
+
+  var activeId = null;
+
+  function setActive(id) {
+    if (id === activeId) return;
+    activeId = id;
+    tocLinks.forEach(function(link) {
+      var linkId = link.getAttribute('data-toc-id');
+      var isH3 = link.classList.contains('text-xs');
+      if (linkId === id) {
+        link.classList.remove('border-transparent', 'text-slate-600', 'text-slate-400', 'font-medium');
+        link.classList.add('border-primary', 'text-slate-900');
+        if (!isH3) link.classList.add('font-semibold');
+      } else {
+        link.classList.remove('border-primary', 'text-slate-900', 'font-semibold');
+        link.classList.add('border-transparent');
+        link.classList.add(isH3 ? 'text-slate-400' : 'text-slate-600');
+        if (!isH3) link.classList.add('font-medium');
+      }
+    });
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        setActive(entry.target.id);
+      }
+    });
+  }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+
+  headingIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

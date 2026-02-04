@@ -45,6 +45,45 @@ env.addFilter("postCategory", (title) => {
 });
 
 
+// Parse rendered HTML to extract headings, inject IDs, and build a TOC structure
+function processContentWithTOC(markdownContent) {
+  const html = marked.parse(markdownContent || "");
+  const toc = [];
+  const usedIds = new Set();
+
+  // Inject id attributes into h2/h3 tags and collect TOC entries
+  const processed = html.replace(/<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag, attrs, inner) => {
+    const level = parseInt(tag[1], 10);
+    const text = inner.replace(/<[^>]+>/g, "").trim(); // strip nested HTML
+    let id = slugify(text);
+
+    // Ensure unique IDs
+    if (usedIds.has(id)) {
+      let i = 2;
+      while (usedIds.has(`${id}-${i}`)) i++;
+      id = `${id}-${i}`;
+    }
+    usedIds.add(id);
+
+    toc.push({ id, text, level });
+    return `<${tag}${attrs} id="${id}">${inner}</${tag}>`;
+  });
+
+  // Build nested structure: h2 = top-level, h3 = children
+  const nested = [];
+  for (const item of toc) {
+    if (item.level === 2) {
+      nested.push({ ...item, children: [] });
+    } else if (item.level === 3 && nested.length) {
+      nested[nested.length - 1].children.push(item);
+    } else {
+      nested.push({ ...item, children: [] });
+    }
+  }
+
+  return { html: processed, toc: nested, headingCount: toc.length };
+}
+
 async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
 
@@ -135,7 +174,8 @@ module.exports = async function (context, req) {
         return;
       }
 
-      const html = nunjucks.render("post.njk", { post, site, cssPath });
+      const { html: contentHtml, toc, headingCount } = processContentWithTOC(post.content);
+      const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath });
 
       context.res = {
         status: 200,
