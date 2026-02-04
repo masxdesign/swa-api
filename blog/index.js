@@ -61,21 +61,24 @@ module.exports = async function (context, req) {
     // SWA passes original URL in x-ms-original-url header when rewriting
     const url = req.headers["x-ms-original-url"] || req.url || req.originalUrl || "";
 
-    // Check if this is the blog list: /blog or /blog/
-    const isListPage = /\/blog\/?$/.test(url);
+    // Parse URL to get pathname (without query string)
+    const urlObj = new URL(url, site.url);
+    const pathname = urlObj.pathname;
+
+    // Check if this is the blog list: /blog or /blog/ (with or without query params)
+    const isListPage = /\/blog\/?$/.test(pathname);
 
     // Check for old URL format: /blog/post/:id (redirect to SEO-friendly URL)
-    const oldPostMatch = url.match(/\/blog\/post\/(\d+)/);
+    const oldPostMatch = pathname.match(/\/blog\/post\/(\d+)/);
 
     // Check for SEO-friendly URL: /blog/{slug}-{id} (id is the number after the last hyphen)
-    const seoPostMatch = url.match(/\/blog\/(.+)-(\d+)$/);
+    const seoPostMatch = pathname.match(/\/blog\/(.+)-(\d+)$/);
 
     // Extract post ID from either format
     const postMatch = oldPostMatch || seoPostMatch;
 
     if (isListPage) {
-      // Parse query parameters for pagination
-      const urlObj = new URL(url, "https://example.com");
+      // Get pagination parameters from query string
       const cursor = urlObj.searchParams.get("cursor");
       const limit = parseInt(urlObj.searchParams.get("limit") || "10", 10);
 
