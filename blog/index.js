@@ -34,16 +34,15 @@ function slugify(text) {
 
 env.addFilter("slugify", slugify);
 
-async function fetchPosts(advertiserId, { limit = 10, cursor = null } = {}) {
-  const params = new URLSearchParams({ limit: limit.toString() });
-  if (cursor) params.set("cursor", cursor);
+async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
+  const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
 
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts?${params}`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const result = await response.json();
   return {
     posts: result.data || [],
-    pagination: result.pagination || { has_next_page: false, next_cursor: null }
+    pagination: result.pagination || { page: 1, total_pages: 1, has_next_page: false, has_prev_page: false }
   };
 }
 
@@ -79,10 +78,10 @@ module.exports = async function (context, req) {
 
     if (isListPage) {
       // Get pagination parameters from query string
-      const cursor = urlObj.searchParams.get("cursor");
+      const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
       const limit = parseInt(urlObj.searchParams.get("limit") || "10", 10);
 
-      const { posts, pagination } = await fetchPosts(advertiserId, { limit, cursor });
+      const { posts, pagination } = await fetchPosts(advertiserId, { page, limit });
       const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath });
 
       context.res = {
