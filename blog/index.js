@@ -108,7 +108,7 @@ function injectPropertyCTA(html, postcodes, advertiserId, { afterParagraph = 3 }
   return injected;
 }
 
-async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
+async function fetchPosts(advertiserId, { page = 1, limit = 15 } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
 
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts?${params}`);
