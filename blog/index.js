@@ -20,6 +20,20 @@ const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: 
 
 env.addFilter("markdown", (str) => marked.parse(str || ""));
 
+// Slugify function for SEO-friendly URLs
+function slugify(text) {
+  return (text || "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")    // Remove special characters
+    .replace(/\s+/g, "-")         // Replace spaces with hyphens
+    .replace(/-+/g, "-")          // Replace multiple hyphens with single
+    .replace(/^-+|-+$/g, "");     // Trim hyphens from start/end
+}
+
+env.addFilter("slugify", slugify);
+
 async function fetchPosts(advertiserId) {
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -41,11 +55,17 @@ module.exports = async function (context, req) {
     // SWA passes original URL in x-ms-original-url header when rewriting
     const url = req.headers["x-ms-original-url"] || req.url || req.originalUrl || "";
 
-    // Check if this is a single post request: /blog/post/:id
-    const postMatch = url.match(/\/blog\/post\/(\d+)/);
-
     // Check if this is the blog list: /blog or /blog/
     const isListPage = /\/blog\/?$/.test(url);
+
+    // Check for old URL format: /blog/post/:id (redirect to SEO-friendly URL)
+    const oldPostMatch = url.match(/\/blog\/post\/(\d+)/);
+
+    // Check for SEO-friendly URL: /blog/{slug}-{id} (id is the number after the last hyphen)
+    const seoPostMatch = url.match(/\/blog\/(.+)-(\d+)$/);
+
+    // Extract post ID from either format
+    const postMatch = oldPostMatch || seoPostMatch;
 
     if (isListPage) {
       const posts = await fetchPosts(advertiserId);
@@ -63,7 +83,8 @@ module.exports = async function (context, req) {
     }
 
     if (postMatch) {
-      const postId = parseInt(postMatch[1], 10);
+      // For old format, postId is in group 1; for SEO format, it's in group 2
+      const postId = parseInt(oldPostMatch ? oldPostMatch[1] : seoPostMatch[2], 10);
       const post = await fetchPost(advertiserId, postId);
 
       if (!post) {
@@ -71,6 +92,21 @@ module.exports = async function (context, req) {
           status: 404,
           headers: { "Content-Type": "text/html" },
           body: nunjucks.render("not-found.njk", { site, cssPath })
+        };
+        return;
+      }
+
+      // If using old URL format, redirect to SEO-friendly URL
+      if (oldPostMatch) {
+        const slug = slugify(post.title);
+        const newUrl = `/blog/${slug}-${post.id}`;
+        context.res = {
+          status: 301,
+          headers: {
+            "Location": newUrl,
+            "Cache-Control": "public, max-age=86400"
+          },
+          body: ""
         };
         return;
       }

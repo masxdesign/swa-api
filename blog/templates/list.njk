@@ -7,7 +7,7 @@
 <div class="posts-list space-y-6">
   {% for post in posts %}
   <article class="post-preview">
-    <h2 class="text-xl font-semibold"><a href="/blog/post/{{ post.id }}" class="text-primary hover:underline">{{ post.title }}</a></h2>
+    <h2 class="text-xl font-semibold"><a href="/blog/{{ post.title | slugify }}-{{ post.id }}" class="text-primary hover:underline">{{ post.title }}</a></h2>
     <p class="text-sm text-gray-500">{{ post.published_at }}</p>
   </article>
   {% else %}
