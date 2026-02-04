@@ -44,18 +44,19 @@ env.addFilter("postCategory", (title) => {
   return "Insight";
 });
 
-// Generate a fallback excerpt from the title
+// Generate an excerpt by stripping markdown from post.content
 env.addFilter("postExcerpt", (post) => {
-  if (post.excerpt) return post.excerpt;
-  // Try to extract location info from the title
-  // Typical title: "Commercial Retail Real Estate Guide - Bond Street, East Marylebone, W5, London"
-  const title = post.title || "";
-  const parts = title.split(/\s*[-–—]\s*/);
-  if (parts.length > 1) {
-    const location = parts.slice(1).join(", ").trim();
-    return `A commercial snapshot of retail demand, tenant mix and trading dynamics in ${location}.`;
-  }
-  return `Explore commercial property insights and retail market analysis in this latest article from ShopProperty.`;
+  const content = post.content || "";
+  const plain = content
+    .replace(/^#{1,6}\s+.*$/gm, "")       // Remove headings
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")  // Remove images
+    .replace(/\[[^\]]*\]\([^)]*\)/g, (m) => m.replace(/\[([^\]]*)\]\([^)]*\)/, "$1")) // Links → text
+    .replace(/[*_~`>]/g, "")               // Remove emphasis/quote/code markers
+    .replace(/\n+/g, " ")                  // Collapse newlines
+    .replace(/\s+/g, " ")                  // Collapse whitespace
+    .trim();
+  if (!plain) return "";
+  return plain.length > 160 ? plain.slice(0, 157) + "..." : plain;
 });
 
 async function fetchPosts(advertiserId, { page = 1, limit = 10 } = {}) {
