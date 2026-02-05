@@ -18,6 +18,11 @@ try {
 
 const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: true });
 
+const _config = getConfig();
+env.addGlobal("gaMeasurementId", _config.gaMeasurementId);
+env.addGlobal("clarityId", _config.clarityId);
+env.addGlobal("currentYear", new Date().getFullYear());
+
 env.addFilter("markdown", (str) => marked.parse(str || ""));
 
 // Slugify function for SEO-friendly URLs
