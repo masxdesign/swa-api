@@ -12,9 +12,25 @@
   <p class="max-w-2xl mx-auto text-lg text-slate-500 leading-relaxed">{{ site.blogDescription }}</p>
 </section>
 
+{# ── Search ── #}
+<form action="/blog" method="get" class="max-w-xl mx-auto pt-8">
+  <div class="relative">
+    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+    <input type="text" name="search" value="{{ search }}" placeholder="Search articles..." autocomplete="off"
+      class="w-full pl-11 pr-10 py-3 text-sm text-slate-800 bg-white border border-slate-200 rounded-xl shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors" />
+    {% if search %}
+    <a href="/blog" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors" aria-label="Clear search">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+    </a>
+    {% endif %}
+  </div>
+</form>
+
 {# ── Post Grid ── #}
-<section class="pt-12">
-  {% if posts.length %}
+<section class="pt-8">
+  {% if search and not posts.length %}
+  <p class="text-center text-slate-500 py-16">No articles found for "<strong>{{ search }}</strong>". <a href="/blog" class="text-primary hover:underline">View all posts</a></p>
+  {% elif posts.length %}
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for post in posts %}
     <a href="/blog/{{ post.title | slugify }}-{{ post.id }}"
@@ -48,7 +64,7 @@
 {% if pagination and pagination.total_pages > 1 %}
 <nav class="mt-12 flex items-center justify-center gap-3" aria-label="Pagination">
   {% if pagination.has_prev_page %}
-  <a href="/blog?page={{ pagination.page - 1 }}"
+  <a href="/blog?page={{ pagination.page - 1 }}{% if search %}&search={{ search | urlencode }}{% endif %}"
      class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors">
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
     Previous
@@ -58,7 +74,7 @@
   <span class="text-sm text-slate-500 px-2">Page {{ pagination.page }} of {{ pagination.total_pages }}</span>
 
   {% if pagination.has_next_page %}
-  <a href="/blog?page={{ pagination.page + 1 }}"
+  <a href="/blog?page={{ pagination.page + 1 }}{% if search %}&search={{ search | urlencode }}{% endif %}"
      class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors">
     Next
     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>

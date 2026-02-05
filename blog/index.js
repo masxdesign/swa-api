@@ -108,8 +108,9 @@ function injectPropertyCTA(html, postcodes, advertiserId, { afterParagraph = 3 }
   return injected;
 }
 
-async function fetchPosts(advertiserId, { page = 1, limit = 15 } = {}) {
+async function fetchPosts(advertiserId, { page = 1, limit = 15, search = "" } = {}) {
   const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
+  if (search) params.set("search", search);
 
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts?${params}`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -151,12 +152,13 @@ module.exports = async function (context, req) {
     const postMatch = oldPostMatch || seoPostMatch;
 
     if (isListPage) {
-      // Get pagination parameters from query string
+      // Get pagination and search parameters from query string
       const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
       const limit = parseInt(urlObj.searchParams.get("limit") || "15", 15);
+      const search = (urlObj.searchParams.get("search") || "").trim();
 
-      const { posts, pagination } = await fetchPosts(advertiserId, { page, limit });
-      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath });
+      const { posts, pagination } = await fetchPosts(advertiserId, { page, limit, search });
+      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath, search });
 
       context.res = {
         status: 200,
