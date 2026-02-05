@@ -25,6 +25,17 @@ function escapeXml(str) {
     .replace(/'/g, "&apos;");
 }
 
+function slugify(text) {
+  return (text || "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function generateSitemap(baseUrl, posts) {
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -46,7 +57,7 @@ function generateSitemap(baseUrl, posts) {
   // Individual blog posts
   for (const post of posts) {
     xml += "  <url>\n";
-    xml += `    <loc>${escapeXml(baseUrl)}/blog/post/${post.id}</loc>\n`;
+    xml += `    <loc>${escapeXml(baseUrl)}/blog/${slugify(post.title)}-${post.id}</loc>\n`;
 
     const lastmod = formatDate(post.updated_at || post.created_at);
     if (lastmod) {

@@ -1,6 +1,10 @@
 {% extends "layout.njk" %}
 
-{% block title %}Post Not Found{% endblock %}
+{% block title %}Post Not Found - {{ site.name }}{% endblock %}
+
+{% block head_extra %}
+  <meta name="robots" content="noindex,follow">
+{% endblock %}
 
 {% block content %}
 <h1 class="text-3xl font-bold text-gray-900 mb-4">Post Not Found</h1>

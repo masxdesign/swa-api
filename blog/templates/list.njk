@@ -1,6 +1,31 @@
 {% extends "layout.njk" %}
 
-{% block title %}Blog - {{ site.name }}{% endblock %}
+{% block title %}{{ site.blogBadge }} - {{ site.name }}{% endblock %}
+
+{% block head_extra %}
+  <meta name="description" content="{{ site.blogDescription }}">
+  <link rel="canonical" href="{{ site.url }}/blog{% if pagination and pagination.page > 1 %}?page={{ pagination.page }}{% endif %}">
+  {% if pagination and pagination.has_prev_page %}
+  <link rel="prev" href="{{ site.url }}/blog?page={{ pagination.page - 1 }}{% if search %}&search={{ search | urlencode }}{% endif %}">
+  {% endif %}
+  {% if pagination and pagination.has_next_page %}
+  <link rel="next" href="{{ site.url }}/blog?page={{ pagination.page + 1 }}{% if search %}&search={{ search | urlencode }}{% endif %}">
+  {% endif %}
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}/blog">
+  <meta property="og:title" content="{{ site.blogBadge }} - {{ site.name }}">
+  <meta property="og:description" content="{{ site.blogDescription }}">
+  <meta property="og:image" content="{{ site.url }}/{{ site.socialImage }}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ site.url }}/blog">
+  <meta name="twitter:title" content="{{ site.blogBadge }} - {{ site.name }}">
+  <meta name="twitter:description" content="{{ site.blogDescription }}">
+  <meta name="twitter:image" content="{{ site.url }}/{{ site.socialImage }}">
+{% endblock %}
 
 {% block main_class %}max-w-6xl{% endblock %}
 
