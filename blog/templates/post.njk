@@ -174,7 +174,7 @@ function copyShareLink(btn) {
     heading.classList.add('group', 'relative');
 
     var wrapper = document.createElement('span');
-    wrapper.className = 'heading-share opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 inline-flex items-center gap-1 ml-2 align-middle';
+    wrapper.className = 'heading-share opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-white/90 backdrop-blur rounded-full shadow-sm border border-slate-200 px-1.5 py-1';
 
     wrapper.innerHTML =
       '<a href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareBaseUrl + '#' + heading.id) + '" target="_blank" rel="noopener" aria-label="Share section on Facebook" class="share-btn inline-flex items-center justify-center w-7 h-7 rounded-full text-slate-300 hover:text-white hover:bg-[#1877F2] transition-colors">' +
