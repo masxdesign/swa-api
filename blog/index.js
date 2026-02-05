@@ -154,7 +154,7 @@ module.exports = async function (context, req) {
     if (isListPage) {
       // Get pagination and search parameters from query string
       const page = parseInt(urlObj.searchParams.get("page") || "1", 10);
-      const limit = parseInt(urlObj.searchParams.get("limit") || "15", 15);
+      const limit = parseInt(urlObj.searchParams.get("limit") || "15", 10);
       const search = (urlObj.searchParams.get("search") || "").trim();
 
       const { posts, pagination } = await fetchPosts(advertiserId, { page, limit, search });
