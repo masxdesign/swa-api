@@ -205,7 +205,8 @@ module.exports = async function (context, req) {
         return;
       }
 
-      const { html: rawContentHtml, toc, headingCount } = processContentWithTOC(post.content);
+      const normalizedContent = post.content.replace(/\[([^\]]+)\]\((\/(?!blog\/)[^)]+)\)/g, '[$1](/blog$2)');
+      const { html: rawContentHtml, toc, headingCount } = processContentWithTOC(normalizedContent);
       const contentHtml = injectPropertyCTA(rawContentHtml, post.extractedPostcodes, advertiserId);
       const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath, advertiserId });
 
