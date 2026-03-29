@@ -18,6 +18,24 @@ try {
 
 const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: true });
 
+/** CDN path for blog post images when the API returns a filename in featured_image_url */
+const BLOG_POST_IMAGE_BASE = "https://api.4prop.com/uploads/blog-posts/";
+
+function resolveFeaturedImage(post) {
+  const raw = post.featured_image_url;
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  const base = BLOG_POST_IMAGE_BASE.endsWith("/") ? BLOG_POST_IMAGE_BASE : `${BLOG_POST_IMAGE_BASE}/`;
+  return base + trimmed.replace(/^\//, "");
+}
+
+function enrichBlogPost(post) {
+  if (!post) return post;
+  return { ...post, featured_image: resolveFeaturedImage(post) };
+}
+
 const _config = getConfig();
 env.addGlobal("gaMeasurementId", _config.gaMeasurementId);
 env.addGlobal("clarityId", _config.clarityId);
@@ -120,8 +138,9 @@ async function fetchPosts(advertiserId, { page = 1, limit = 15, search = "" } = 
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts?${params}`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const result = await response.json();
+  const posts = (result.data || []).map(enrichBlogPost);
   return {
-    posts: result.data || [],
+    posts,
     pagination: result.pagination || { page: 1, total_pages: 1, has_next_page: false, has_prev_page: false }
   };
 }
@@ -130,7 +149,7 @@ async function fetchPost(advertiserId, postId) {
   const response = await propertyPubFetch(`/api/advertisers/${advertiserId}/blog-posts/${postId}`);
   if (!response.ok) return null;
   const result = await response.json();
-  return result.data || null;
+  return enrichBlogPost(result.data || null);
 }
 
 module.exports = async function (context, req) {
