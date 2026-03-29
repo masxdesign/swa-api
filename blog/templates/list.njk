@@ -79,8 +79,9 @@
         {% if post.featured_image %}
         {% set m = post.metadata %}
         {% set fioCity = m.suburb or m.neighbourhood or m.borough %}
+        {% set fioIconLazy = true %}
         <div class="fio-wrapper fio-thumbnail">
-          <img src="{{ post.featured_image }}" alt="{{ post.title }}" width="640" height="360" decoding="async" loading="lazy" class="group-hover:scale-105 transition-transform duration-300" />
+          <img src="{{ post.featured_image }}" alt="{{ post.title }}" width="640" height="360" decoding="async" loading="lazy" class="fio-backdrop group-hover:scale-105 transition-transform duration-300" />
           <div class="fio-overlay">
             {% include "fio-overlay-inner.njk" %}
           </div>

@@ -103,7 +103,7 @@
       {% set fioCity = m.suburb or m.neighbourhood or m.borough %}
       <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100">
         <div class="fio-wrapper fio-full">
-          <img src="{{ post.featured_image }}" alt="{{ post.title }}" width="1920" height="1080" decoding="async" />
+          <img src="{{ post.featured_image }}" alt="{{ post.title }}" width="1920" height="1080" decoding="async" class="fio-backdrop" />
           <div class="fio-overlay">
             {% include "fio-overlay-inner.njk" %}
           </div>

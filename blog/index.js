@@ -21,6 +21,58 @@ const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: 
 /** CDN path for blog post images when the API returns a filename in featured_image_url */
 const BLOG_POST_IMAGE_BASE = "https://api.4prop.com/uploads/blog-posts/";
 
+/** Iconify Lucide URLs for FIO overlay (white strokes on photo). Aligned with CRM CATEGORY_CONFIG. */
+const FIO_ICONIFY_COLOR = "color=%23ffffff";
+function lucideIconifyUrl(iconId) {
+  return `https://api.iconify.design/lucide:${iconId}.svg?${FIO_ICONIFY_COLOR}`;
+}
+const DEFAULT_FIO_LUCIDE_ICON = "map-pin";
+const DEFAULT_FIO_ANCHOR_ICON_URL = lucideIconifyUrl(DEFAULT_FIO_LUCIDE_ICON);
+
+/** Slug → Lucide icon name (kebab-case). Unknown slugs fall back to map-pin at resolve time. */
+const ANCHOR_SLUG_TO_LUCIDE = {
+  museum: "building-2",
+  park: "tree-pine",
+  landmark: "landmark",
+  flagship_retail: "store",
+  supermarket: "shopping-cart",
+  health_club: "dumbbell",
+  health_club_branded: "dumbbell",
+  health_club_generic: "dumbbell",
+  theatre: "drama",
+  airport: "plane",
+  shopping: "shopping-bag",
+  poi: "map-pinned",
+  attraction: "star",
+  historic: "castle"
+};
+
+/**
+ * Dedupe slugs (order preserved), map to Iconify URLs, then dedupe URLs (order preserved).
+ * Missing / empty anchor_categories → [default].
+ */
+function resolveFioAnchorIconUrls(metadata) {
+  const raw = metadata && metadata.anchor_categories;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return [DEFAULT_FIO_ANCHOR_ICON_URL];
+  }
+  const seenSlugs = new Set();
+  const seenUrls = new Set();
+  const urls = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    const slug = item.trim();
+    if (!slug || seenSlugs.has(slug)) continue;
+    seenSlugs.add(slug);
+    const lucide = ANCHOR_SLUG_TO_LUCIDE[slug];
+    const url = lucideIconifyUrl(lucide || DEFAULT_FIO_LUCIDE_ICON);
+    if (seenUrls.has(url)) continue;
+    seenUrls.add(url);
+    urls.push(url);
+  }
+  return urls.length ? urls : [DEFAULT_FIO_ANCHOR_ICON_URL];
+}
+
 function resolveFeaturedImage(post) {
   const raw = post.featured_image_url;
   if (!raw || typeof raw !== "string") return null;
@@ -37,7 +89,12 @@ function enrichBlogPost(post) {
     post.metadata && typeof post.metadata === "object" && !Array.isArray(post.metadata)
       ? post.metadata
       : {};
-  return { ...post, featured_image: resolveFeaturedImage(post), metadata };
+  return {
+    ...post,
+    featured_image: resolveFeaturedImage(post),
+    metadata,
+    fio_anchor_icon_urls: resolveFioAnchorIconUrls(metadata)
+  };
 }
 
 const _config = getConfig();
