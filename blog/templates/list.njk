@@ -72,7 +72,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for post in posts %}
     <a href="/blog/{{ post.title | slugify }}-{{ post.id }}"
-       class="group flex flex-col bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+       class="group flex flex-col overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
       {# Featured image — uses post.featured_image if available, otherwise placeholder #}
       <div class="h-48 relative bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 overflow-hidden border-b border-slate-100">
         {% if post.featured_image %}
