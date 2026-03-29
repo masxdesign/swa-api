@@ -33,7 +33,11 @@ function resolveFeaturedImage(post) {
 
 function enrichBlogPost(post) {
   if (!post) return post;
-  return { ...post, featured_image: resolveFeaturedImage(post) };
+  const metadata =
+    post.metadata && typeof post.metadata === "object" && !Array.isArray(post.metadata)
+      ? post.metadata
+      : {};
+  return { ...post, featured_image: resolveFeaturedImage(post), metadata };
 }
 
 const _config = getConfig();
