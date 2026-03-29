@@ -1,0 +1,58 @@
+<style>
+.fio-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  container-type: inline-size;
+}
+.fio-wrapper img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fio-wrapper .fio-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.fio-full .fio-overlay       { padding: 0 clamp(0.75rem, 3cqw, 2rem); }
+.fio-full .fio-icons         { margin-bottom: clamp(0.4rem, 2cqw, 1rem); display: flex; align-items: center; gap: clamp(0.75rem, 3cqw, 1.75rem); opacity: 0.8; }
+.fio-full .fio-icons svg     { width: clamp(1.25rem, 5cqw, 2.75rem); height: clamp(1.25rem, 5cqw, 2.75rem); }
+.fio-full .fio-street        { font-size: clamp(1.25rem, 7cqw, 3.5rem); font-weight: 700; line-height: 1.25; margin: 0; }
+.fio-full .fio-city          { margin-top: clamp(0.2rem, 1cqw, 0.5rem); font-size: clamp(0.75rem, 3cqw, 1.5rem); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+.fio-full .fio-pill-row      { margin-top: clamp(0.4rem, 2cqw, 1.25rem); display: flex; align-items: center; gap: clamp(0.25rem, 1cqw, 0.5rem); }
+.fio-full .fio-line          { height: 2px; width: clamp(1rem, 4cqw, 2.5rem); border-radius: 9999px; background: #f97316; }
+.fio-full .fio-pill          { padding: clamp(0.15rem, 0.5cqw, 0.25rem) clamp(0.5rem, 2cqw, 1rem); border-radius: 9999px; background: #f97316; color: #fff; font-size: clamp(0.7rem, 2.5cqw, 1.25rem); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.fio-thumbnail .fio-overlay  { padding: 0 clamp(0.75rem, 3cqw, 2rem); }
+.fio-thumbnail .fio-icons    { margin-bottom: clamp(0.4rem, 2cqw, 1rem); display: flex; align-items: center; gap: clamp(0.75rem, 3cqw, 1.75rem); opacity: 0.8; }
+.fio-thumbnail .fio-icons svg{ width: clamp(1.25rem, 5cqw, 2.75rem); height: clamp(1.25rem, 5cqw, 2.75rem); }
+.fio-thumbnail .fio-street   { font-size: clamp(1.25rem, 7cqw, 3.5rem); font-weight: 700; line-height: 1.25; margin: 0; }
+.fio-thumbnail .fio-city     { margin-top: clamp(0.2rem, 1cqw, 0.5rem); font-size: clamp(0.75rem, 3cqw, 1.5rem); letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+.fio-thumbnail .fio-pill-row { margin-top: clamp(0.4rem, 2cqw, 1.25rem); display: flex; align-items: center; gap: clamp(0.25rem, 1cqw, 0.5rem); }
+.fio-thumbnail .fio-line     { height: 2px; width: clamp(1rem, 4cqw, 2.5rem); border-radius: 9999px; background: #f97316; }
+.fio-thumbnail .fio-pill     { padding: clamp(0.15rem, 0.5cqw, 0.25rem) clamp(0.5rem, 2cqw, 1rem); border-radius: 9999px; background: #f97316; color: #fff; font-size: clamp(0.7rem, 2.5cqw, 1.25rem); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.post-hero-fio .fio-wrapper { border: 0; border-radius: 1rem; }
+
+/* List cards: fixed h-48 strip — fill height, drop 16:9 */
+.blog-card-fio .fio-wrapper {
+  height: 100%;
+  width: 100%;
+  aspect-ratio: auto;
+  border: none;
+  border-radius: 0;
+}
+</style>
