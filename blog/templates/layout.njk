@@ -33,20 +33,20 @@
   <link id="main-styles" rel="stylesheet" href="{{ cssPath | default('/assets/index.css') }}">
 </head>
 <body class="bg-white">
-  <header class="bg-white shadow-lg/5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <a href="/" class="flex items-center justify-start gap-2">
-            <img src="/{{ site.logoPrimary }}" alt="{{ site.name }}" class="h-8">
-            <span class="flex flex-col leading-none -space-y-2.5 font-logo text-gray-900">
-                <span class="text-lg font-bold tracking-tight">{{ site.brandLine1 }}</span>
-                <span class="text-lg font-bold tracking-tight">{{ site.brandLine2 }}</span>
-            </span>
-        </a>
-        <nav>
-          <a href="/" class="text-gray-900 hover:underline">Home</a>
-          <a href="/blog" class="text-gray-900 hover:underline ml-4">Blog</a>
-        </nav>
-      </div>
+  <header class="sticky top-0 z-50 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center gap-6">
+      <a href="/" class="group flex items-center gap-3 min-w-0">
+        <img src="/{{ site.logoPrimary }}" alt="{{ site.name }}" class="h-9 w-auto shrink-0" width="120" height="36">
+        <span class="flex flex-col leading-[1.05] font-logo text-ink min-w-0">
+          <span class="text-[0.95rem] sm:text-lg font-semibold tracking-tight group-hover:text-clay transition-colors -mb-[7px]">{{ site.brandLine1 }}</span>
+          <span class="text-[0.95rem] sm:text-lg font-semibold tracking-tight text-ink-muted group-hover:text-ink transition-colors">{{ site.brandLine2 }}</span>
+        </span>
+      </a>
+      <nav class="flex items-center gap-1 sm:gap-2 shrink-0" aria-label="Primary">
+        <a href="/" class="font-display text-sm font-semibold text-ink-muted hover:text-ink px-3 py-2 rounded-md hover:bg-ink/[0.04] transition-colors">Home</a>
+        <a href="/blog" class="font-display text-sm font-semibold text-ink px-3 py-2 rounded-md bg-ink/[0.06]">Blog</a>
+      </nav>
+    </div>
   </header>
 
   <main class="{% block main_class %}max-w-3xl{% endblock %} mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 min-h-[80vh] text-gray-900">

@@ -1,4 +1,5 @@
 const { getConfig } = require("../utils");
+const { resolveCssPathForRequest } = require("../css-path");
 
 /**
  * Listing SPA handler
@@ -9,6 +10,7 @@ const { getConfig } = require("../utils");
 module.exports = async function (context, req) {
   try {
     const { site } = getConfig();
+    const cssPath = resolveCssPathForRequest(req);
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -17,6 +19,7 @@ module.exports = async function (context, req) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Listings - ${site.name}</title>
   <meta name="description" content="${site.tagline}">
+  <link rel="stylesheet" href="${cssPath}">
 </head>
 <body>
   <div id="root"></div>

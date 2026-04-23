@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { marked } = require("marked");
 const { getConfig, propertyPubFetch } = require("../utils");
+const { resolveCssPathForRequest } = require("../css-path");
 
 // Load asset manifest for CSS path
 let cssPath = "/assets/index.css"; // fallback
@@ -216,6 +217,7 @@ async function fetchPost(advertiserId, postId) {
 module.exports = async function (context, req) {
   try {
     const { advertiserId, site } = getConfig();
+    const requestCssPath = resolveCssPathForRequest(req, cssPath);
 
     // SWA passes original URL in x-ms-original-url header when rewriting
     const url = req.headers["x-ms-original-url"] || req.url || req.originalUrl || "";
@@ -243,7 +245,7 @@ module.exports = async function (context, req) {
       const search = (urlObj.searchParams.get("search") || "").trim();
 
       const { posts, pagination } = await fetchPosts(advertiserId, { page, limit, search });
-      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath, search });
+      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath: requestCssPath, search });
 
       context.res = {
         status: 200,
@@ -265,7 +267,7 @@ module.exports = async function (context, req) {
         context.res = {
           status: 404,
           headers: { "Content-Type": "text/html" },
-          body: nunjucks.render("not-found.njk", { site, cssPath })
+          body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath })
         };
         return;
       }
@@ -288,7 +290,7 @@ module.exports = async function (context, req) {
       const normalizedContent = post.content.replace(/\[([^\]]+)\]\((\/(?!blog\/)[^)]+)\)/g, '[$1](/blog$2)');
       const { html: rawContentHtml, toc, headingCount } = processContentWithTOC(normalizedContent);
       const contentHtml = injectPropertyCTA(rawContentHtml, post.extractedPostcodes, advertiserId);
-      const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath, advertiserId });
+      const html = nunjucks.render("post.njk", { post, contentHtml, toc, headingCount, site, cssPath: requestCssPath, advertiserId });
 
       context.res = {
         status: 200,
@@ -305,7 +307,7 @@ module.exports = async function (context, req) {
     context.res = {
       status: 404,
       headers: { "Content-Type": "text/html" },
-      body: nunjucks.render("not-found.njk", { site, cssPath })
+      body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath })
     };
 
   } catch (err) {
