@@ -4,6 +4,7 @@ const fs = require("fs");
 const { marked } = require("marked");
 const { getConfig, propertyPubFetch } = require("../utils");
 const { resolveCssPathForRequest } = require("../css-path");
+// Used for local function behavior (template hot reload, local CSS path, etc.)
 const isLocalDev = !process.env.WEBSITE_HOSTNAME;
 
 // Load asset manifest for CSS path
