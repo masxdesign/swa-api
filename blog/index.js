@@ -4,6 +4,7 @@ const fs = require("fs");
 const { marked } = require("marked");
 const { getConfig, propertyPubFetch } = require("../utils");
 const { resolveCssPathForRequest } = require("../css-path");
+const isLocalDev = !process.env.WEBSITE_HOSTNAME;
 
 // Load asset manifest for CSS path
 let cssPath = "/assets/index.css"; // fallback
@@ -17,7 +18,10 @@ try {
   // Use fallback
 }
 
-const env = nunjucks.configure(path.join(__dirname, "templates"), { autoescape: true });
+const env = nunjucks.configure(path.join(__dirname, "templates"), {
+  autoescape: true,
+  noCache: isLocalDev
+});
 
 /** CDN path for blog post images when the API returns a filename in featured_image_url */
 const BLOG_POST_IMAGE_BASE = "https://api.4prop.com/uploads/blog-posts/";
@@ -245,7 +249,7 @@ module.exports = async function (context, req) {
       const search = (urlObj.searchParams.get("search") || "").trim();
 
       const { posts, pagination } = await fetchPosts(advertiserId, { page, limit, search });
-      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath: requestCssPath, search });
+      const html = nunjucks.render("list.njk", { posts, pagination, site, cssPath: requestCssPath, search, advertiserId });
 
       context.res = {
         status: 200,
@@ -267,7 +271,7 @@ module.exports = async function (context, req) {
         context.res = {
           status: 404,
           headers: { "Content-Type": "text/html" },
-          body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath })
+          body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath, advertiserId })
         };
         return;
       }
@@ -307,7 +311,7 @@ module.exports = async function (context, req) {
     context.res = {
       status: 404,
       headers: { "Content-Type": "text/html" },
-      body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath })
+      body: nunjucks.render("not-found.njk", { site, cssPath: requestCssPath, advertiserId })
     };
 
   } catch (err) {
